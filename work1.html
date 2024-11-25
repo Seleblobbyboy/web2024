@@ -37,14 +37,14 @@
       }
       #btnStart,
       #btnCheckAnswer,
-      #btnRetry {
+      #btnViewScore {
         background-color: #6c63ff;
         color: white;
         border: none;
       }
       #btnStart:hover,
       #btnCheckAnswer:hover,
-      #btnRetry:hover {
+      #btnViewScore:hover {
         background-color: #5b54e0;
       }
       #resultBox .alert {
@@ -55,10 +55,9 @@
     </style>
   </head>
   <body>
-
     <div class="container mt-4">
       <div class="header">
-        <h1>แบบทดสอบความรู้เบื้องต้น</h1>
+        <p class="h1">แบบทดสอบความรู้เบื้องต้น</p>
         <p>ทดสอบความรู้ของคุณ</p>
       </div>
     </div>
@@ -68,57 +67,54 @@
         <button class="btn btn-lg" id="btnStart">เริ่มทำแบบทดสอบ</button>
       </div>
 
-      <div id="quizBox" style="display: none;">
+      <div id="quizBox" style="display: none">
         <div id="quizListBox"></div>
         <div class="text-center mt-4">
-          <button class="btn btn-lg" id="btnCheckAnswer">ตรวจคำตอบ</button>
+          <button class="btn btn-lg" id="btnCheckAnswer">ส่งคำตอบ</button>
         </div>
       </div>
 
-      <div id="resultBox" class="mt-5" style="display: none;">
+      <div id="resultBox" class="mt-5" style="display: none">
         <div class="alert alert-info">
           <p id="scoreText"></p>
-          <button class="btn btn-lg" id="btnRetry">ทำใหม่</button>
         </div>
       </div>
     </div>
 
     <script>
       $(function () {
-      
         $('#quizBox').hide();
         $('#resultBox').hide();
 
-     
         $('#btnStart').click(function () {
-          $('#startBox').hide(); 
+          $('#startBox').hide();
           $('#quizBox').fadeIn();
-          displayQuizList(); 
+          displayQuizList();
         });
 
- 
         $('#btnCheckAnswer').click(function () {
-          checkAnswers(); 
+          if (!validateAnswers()) {
+            return;
+          }
+          checkAnswers();
         });
 
-   
-        $('#btnRetry').click(function () {
-          location.reload(); 
+        $(document).on('click', '#btnViewScore', function () {
+          viewScore();
         });
       });
 
       function displayQuizList() {
-        $('#quizListBox').html(''); 
+        $('#quizListBox').html('');
         for (var i in quizlist) {
           displayQuiz(i, quizlist[i]);
         }
       }
 
-
       function displayQuiz(i, q) {
         var no = parseInt(i) + 1;
         var questionDiv = `
-          <div class="card">
+          <div class="card" id="question${no}">
             <div class="card-body">
               <h5 class="card-title">ข้อที่ ${no}: ${q.question}</h5>
               <div class="mt-3" id="options${no}">
@@ -128,7 +124,6 @@
         `;
         $('#quizListBox').append(questionDiv);
 
- 
         for (var c in q.options) {
           var optionValue = parseInt(c) + 1;
           var optionHTML = `
@@ -141,26 +136,68 @@
         }
       }
 
-
-      function checkAnswers() {
-        var correctCount = 0; 
-        var totalQuestions = quizlist.length;
-
+      function validateAnswers() {
+        var allAnswered = true;
 
         for (var i in quizlist) {
           var no = parseInt(i) + 1;
-          var selectedAnswer = $(`input[name='q${no}']:checked`).val(); 
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
+
+          if (!selectedAnswer) {
+            allAnswered = false;
+            $(`#question${no}`).css('border', '2px solid red');
+            $('html, body').animate(
+              { scrollTop: $(`#question${no}`).offset().top - 20 },
+              300
+            );
+            break;
+          } else {
+            $(`#question${no}`).css('border', 'none');
+          }
+        }
+
+        return allAnswered;
+      }
+
+      function checkAnswers() {
+        var correctCount = 0;
+        var totalQuestions = quizlist.length;
+
+        for (var i in quizlist) {
+          var no = parseInt(i) + 1;
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
           if (selectedAnswer == quizlist[i].answer) {
             correctCount++;
           }
         }
 
-
         $('#quizBox').hide();
         $('#resultBox').fadeIn();
-        $('#scoreText').html(`คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ`);
+        $('#resultBox .alert').html(`
+          <p id="scoreText">คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ</p>
+          <button class="btn btn-lg" id="btnViewScore">ดูคำตอบ</button>
+        `);
       }
 
+      function viewScore() {
+        $('#quizBox').show();
+        $('#resultBox').hide();
+
+        for (var i in quizlist) {
+          var no = parseInt(i) + 1;
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
+
+          $(`input[name='q${no}']`).attr('disabled', true);
+
+          if (selectedAnswer == quizlist[i].answer) {
+            $(`#question${no}`).css('border', '3px solid green');
+          } else {
+            $(`#question${no}`).css('border', '3px solid red');
+          }
+        }
+
+        $('html, body').animate({ scrollTop: $('#quizBox').offset().top }, 300);
+      }
 
       var quizlist = [
         {
