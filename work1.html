@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>work 1: แบบทดสอบ ม.1</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+      body {
+        background-color: #f7f9fc;
+        font-family: 'Arial', sans-serif;
+      }
+      .header {
+        background-color: #6c63ff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .header h1 {
+        font-weight: bold;
+      }
+      .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .form-check-input {
+        margin-top: 5px;
+      }
+      #btnStart,
+      #btnCheckAnswer,
+      #btnRetry {
+        background-color: #6c63ff;
+        color: white;
+        border: none;
+      }
+      #btnStart:hover,
+      #btnCheckAnswer:hover,
+      #btnRetry:hover {
+        background-color: #5b54e0;
+      }
+      #resultBox .alert {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container mt-4">
+      <div class="header">
+        <h1>แบบทดสอบความรู้เบื้องต้น</h1>
+        <p>ทดสอบความรู้ของคุณ</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="startBox" class="text-center">
+        <button class="btn btn-lg" id="btnStart">เริ่มทำแบบทดสอบ</button>
+      </div>
+
+      <div id="quizBox" style="display: none;">
+        <div id="quizListBox"></div>
+        <div class="text-center mt-4">
+          <button class="btn btn-lg" id="btnCheckAnswer">ตรวจคำตอบ</button>
+        </div>
+      </div>
+
+      <div id="resultBox" class="mt-5" style="display: none;">
+        <div class="alert alert-info">
+          <p id="scoreText"></p>
+          <button class="btn btn-lg" id="btnRetry">ทำใหม่</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(function () {
+      
+        $('#quizBox').hide();
+        $('#resultBox').hide();
+
+     
+        $('#btnStart').click(function () {
+          $('#startBox').hide(); 
+          $('#quizBox').fadeIn();
+          displayQuizList(); 
+        });
+
+ 
+        $('#btnCheckAnswer').click(function () {
+          checkAnswers(); 
+        });
+
+   
+        $('#btnRetry').click(function () {
+          location.reload(); 
+        });
+      });
+
+      function displayQuizList() {
+        $('#quizListBox').html(''); 
+        for (var i in quizlist) {
+          displayQuiz(i, quizlist[i]);
+        }
+      }
+
+
+      function displayQuiz(i, q) {
+        var no = parseInt(i) + 1;
+        var questionDiv = `
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">ข้อที่ ${no}: ${q.question}</h5>
+              <div class="mt-3" id="options${no}">
+              </div>
+            </div>
+          </div>
+        `;
+        $('#quizListBox').append(questionDiv);
+
+ 
+        for (var c in q.options) {
+          var optionValue = parseInt(c) + 1;
+          var optionHTML = `
+            <div class="form-check">
+              <input type="radio" class="form-check-input" name="q${no}" value="${optionValue}">
+              <label class="form-check-label">${q.options[c]}</label>
+            </div>
+          `;
+          $(`#options${no}`).append(optionHTML);
+        }
+      }
+
+
+      function checkAnswers() {
+        var correctCount = 0; 
+        var totalQuestions = quizlist.length;
+
+
+        for (var i in quizlist) {
+          var no = parseInt(i) + 1;
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val(); 
+          if (selectedAnswer == quizlist[i].answer) {
+            correctCount++;
+          }
+        }
+
+
+        $('#quizBox').hide();
+        $('#resultBox').fadeIn();
+        $('#scoreText').html(`คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ`);
+      }
+
+
+      var quizlist = [
+        {
+          question: 'เมืองหลวงของประเทศไทยคืออะไร?',
+          options: ['กรุงเทพฯ', 'เชียงใหม่', 'ภูเก็ต', 'นครราชสีมา'],
+          answer: 1
+        },
+        {
+          question: '5 + 3 ได้เท่าไหร่?',
+          options: ['5', '8', '9', '10'],
+          answer: 2
+        },
+        {
+          question: 'ดาวเคราะห์ที่ใหญ่ที่สุดในระบบสุริยะคืออะไร?',
+          options: ['ดาวอังคาร', 'ดาวพฤหัส', 'โลก', 'ดาวศุกร์'],
+          answer: 2
+        },
+        {
+          question: "ธาตุที่มีสัญลักษณ์ทางเคมีว่า 'O' คืออะไร?",
+          options: ['ออกซิเจน', 'ทอง', 'ออสเมียม', 'เงิน'],
+          answer: 1
+        },
+        {
+          question: "ใครเขียนเรื่อง 'แฮมเล็ต'?",
+          options: ['เชคสเปียร์', 'ดิกเกนส์', 'เฮมิงเวย์', 'โทลคีน'],
+          answer: 1
+        },
+        {
+          question: 'รากที่สองของ 64 คืออะไร?',
+          options: ['6', '8', '7', '9'],
+          answer: 2
+        },
+        {
+          question: 'มหาสมุทรใดที่ใหญ่ที่สุดในโลก?',
+          options: ['แอตแลนติก', 'อินเดีย', 'แปซิฟิก', 'อาร์กติก'],
+          answer: 3
+        },
+        {
+          question: 'จุดเดือดของน้ำคือกี่องศาเซลเซียส?',
+          options: ['90°C', '80°C', '100°C', '120°C'],
+          answer: 3
+        },
+        {
+          question: 'ใครเป็นคนวาดภาพโมนาลิซา?',
+          options: ['ดาวินชี', 'แวนโก๊ะ', 'ปิกัสโซ่', 'โมเนต์'],
+          answer: 1
+        },
+        {
+          question: 'จำนวนเฉพาะที่เล็กที่สุดคืออะไร?',
+          options: ['0', '1', '2', '3'],
+          answer: 2
+        },
+        {
+          question: 'เงินตราของประเทศญี่ปุ่นคืออะไร?',
+          options: ['เยน', 'วอน', 'ดอลลาร์', 'ยูโร'],
+          answer: 1
+        },
+        {
+          question: 'ใครค้นพบแรงโน้มถ่วง?',
+          options: ['นิวตัน', 'ไอน์สไตน์', 'กาลิเลโอ', 'เทสลา'],
+          answer: 1
+        },
+        {
+          question: 'สัญลักษณ์ทางเคมีของทองคืออะไร?',
+          options: ['Au', 'Ag', 'Fe', 'Hg'],
+          answer: 1
+        },
+        {
+          question: "ประเทศใดมีชื่อเล่นว่า 'ดินแดนแห่งอาทิตย์อุทัย'?",
+          options: ['ญี่ปุ่น', 'จีน', 'อินเดีย', 'ไทย'],
+          answer: 1
+        },
+        {
+          question: 'ความเร็วของแสงคือเท่าไหร่?',
+          options: [
+            '300,000 กม./วินาที',
+            '150,000 กม./วินาที',
+            '200,000 กม./วินาที',
+            '250,000 กม./วินาที'
+          ],
+          answer: 1
+        },
+        {
+          question: "ใครเป็นผู้เขียนเรื่อง '1984'?",
+          options: [
+            'จอร์จ ออร์เวลล์',
+            'มาร์ค ทเวน',
+            'เจน ออสเตน',
+            'เจ.เค. โรว์ลิ่ง'
+          ],
+          answer: 1
+        },
+        {
+          question: 'แม่น้ำที่ยาวที่สุดในโลกคือแม่น้ำใด?',
+          options: ['อะเมซอน', 'ไนล์', 'แยงซีเกียง', 'มิสซิสซิปปี'],
+          answer: 2
+        },
+        {
+          question: 'เมืองหลวงของฝรั่งเศสคืออะไร?',
+          options: ['ปารีส', 'ลอนดอน', 'เบอร์ลิน', 'โรม'],
+          answer: 1
+        },
+        {
+          question: 'ประเทศไทยใช้สกุลเงินใด?',
+          options: ['บาท', 'ดอลลาร์', 'ยูโร', 'เยน'],
+          answer: 1
+        },
+        {
+          question: 'ธงชาติไทยมีกี่สี?',
+          options: ['3', '4', '5', '6'],
+          answer: 1
+        }
+      ]
+    </script>
+  </body>
+</html>
