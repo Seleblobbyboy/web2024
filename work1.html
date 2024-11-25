@@ -86,239 +86,135 @@
     </div>
 
     <script>
+      let quizlist = []
+
       $(function () {
-        $('#quizBox').hide();
-        $('#resultBox').hide();
+        $('#quizBox').hide()
+        $('#resultBox').hide()
+
+        // ดึงข้อมูลจากไฟล์ JSON
+        fetch('quiz.json')
+          .then(response => response.json())
+          .then(data => {
+            quizlist = data
+          })
+          .catch(error => console.error('Error loading quiz.json:', error))
 
         $('#btnStart').click(function () {
-          $('#startBox').hide();
-          $('#quizBox').fadeIn();
-          displayQuizList();
-        });
+          $('#startBox').hide()
+          $('#quizBox').fadeIn()
+          displayQuizList()
+        })
 
         $('#btnCheckAnswer').click(function () {
           if (!validateAnswers()) {
-            return; 
+            return
           }
-          checkAnswers();
-        });
+          checkAnswers()
+        })
 
         $(document).on('click', '#btnViewScore', function () {
-          viewScore();
-        });
-      });
+          viewScore()
+        })
+      })
 
       function displayQuizList() {
-        $('#quizListBox').html('');
+        $('#quizListBox').html('')
         for (var i in quizlist) {
-          displayQuiz(i, quizlist[i]);
+          displayQuiz(i, quizlist[i])
         }
       }
 
       function displayQuiz(i, q) {
-        var no = parseInt(i) + 1;
+        var no = parseInt(i) + 1
         var questionDiv = `
-          <div class="card" id="question${no}">
-            <div class="card-body">
-              <h5 class="card-title">ข้อที่ ${no}: ${q.question}</h5>
-              <div class="mt-3" id="options${no}">
-              </div>
-            </div>
-          </div>
-        `;
-        $('#quizListBox').append(questionDiv);
+    <div class="card" id="question${no}">
+      <div class="card-body">
+        <h5 class="card-title">ข้อที่ ${no}: ${q.question}</h5>
+        <div class="mt-3" id="options${no}">
+        </div>
+      </div>
+    </div>
+  `
+        $('#quizListBox').append(questionDiv)
 
         for (var c in q.options) {
-          var optionValue = parseInt(c) + 1;
+          var optionValue = parseInt(c) + 1
           var optionHTML = `
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="q${no}" value="${optionValue}">
-              <label class="form-check-label">${q.options[c]}</label>
-            </div>
-          `;
-          $(`#options${no}`).append(optionHTML);
+      <div class="form-check">
+        <input type="radio" class="form-check-input" name="q${no}" value="${optionValue}">
+        <label class="form-check-label">${q.options[c]}</label>
+      </div>
+    `
+          $(`#options${no}`).append(optionHTML)
         }
       }
 
       function validateAnswers() {
-        var allAnswered = true;
+        var allAnswered = true
 
         for (var i in quizlist) {
-          var no = parseInt(i) + 1;
-          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
+          var no = parseInt(i) + 1
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val()
 
           if (!selectedAnswer) {
-            allAnswered = false;
-            $(`#question${no}`).css('border', '2px solid red'); 
+            allAnswered = false
+            $(`#question${no}`).css('border', '2px solid red')
             $('html, body').animate(
               { scrollTop: $(`#question${no}`).offset().top - 20 },
               300
-            ); 
-            break; 
+            )
+            break
           } else {
-            $(`#question${no}`).css('border', 'none'); 
+            $(`#question${no}`).css('border', 'none')
           }
         }
 
-        return allAnswered;
+        return allAnswered
       }
 
       function checkAnswers() {
-        var correctCount = 0;
-        var totalQuestions = quizlist.length;
+        var correctCount = 0
+        var totalQuestions = quizlist.length
 
         for (var i in quizlist) {
-          var no = parseInt(i) + 1;
-          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
+          var no = parseInt(i) + 1
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val()
           if (selectedAnswer == quizlist[i].answer) {
-            correctCount++;
+            correctCount++
           }
         }
 
-        $('#quizBox').hide();
-        $('#resultBox').fadeIn();
+        $('#quizBox').hide()
+        $('#resultBox').fadeIn()
         $('#resultBox .alert').html(`
-          <p id="scoreText">คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ</p>
-          <button class="btn btn-lg " id="btnViewScore">ดูคำตอบ</button>
-        `); 
+    <p id="scoreText">คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ</p>
+    <button class="btn btn-lg" id="btnViewScore">ดูคำตอบ</button>
+  `)
       }
 
       function viewScore() {
-        $('#quizBox').show();
-        $('#resultBox').hide();
+        $('#quizBox').show()
+        $('#resultBox').hide()
 
         for (var i in quizlist) {
-          var no = parseInt(i) + 1;
-          var selectedAnswer = $(`input[name='q${no}']:checked`).val();
+          var no = parseInt(i) + 1
+          var selectedAnswer = $(`input[name='q${no}']:checked`).val()
 
-   
-          $(`input[name='q${no}']`).attr('disabled', true);
+          $(`input[name='q${no}']`).attr('disabled', true)
 
-        
           if (selectedAnswer == quizlist[i].answer) {
-            $(`#question${no}`).css('border', '3px solid green'); 
+            $(`#question${no}`).css('border', '3px solid green')
           } else {
-            $(`#question${no}`).css('border', '3px solid red');
-            $(`#options${no} .form-check-label`).eq(quizlist[i].answer - 1).addClass('correct-answer'); // เฉลยคำตอบที่ถูก
+            $(`#question${no}`).css('border', '3px solid red')
+            $(`#options${no} .form-check-label`)
+              .eq(quizlist[i].answer - 1)
+              .addClass('correct-answer')
           }
         }
 
-        
-        $('html, body').animate({ scrollTop: $('#quizBox').offset().top }, 300);
+        $('html, body').animate({ scrollTop: $('#quizBox').offset().top }, 300)
       }
-
-      var quizlist = [
-        {
-          question: 'เมืองหลวงของประเทศไทยคืออะไร?',
-          options: ['กรุงเทพฯ', 'เชียงใหม่', 'ภูเก็ต', 'นครราชสีมา'],
-          answer: 1
-        },
-        {
-          question: '5 + 3 ได้เท่าไหร่?',
-          options: ['5', '8', '9', '10'],
-          answer: 2
-        },
-        {
-          question: 'ดาวเคราะห์ที่ใหญ่ที่สุดในระบบสุริยะคืออะไร?',
-          options: ['ดาวอังคาร', 'ดาวพฤหัส', 'โลก', 'ดาวศุกร์'],
-          answer: 2
-        },
-        {
-          question: "ธาตุที่มีสัญลักษณ์ทางเคมีว่า 'O' คืออะไร?",
-          options: ['ออกซิเจน', 'ทอง', 'ออสเมียม', 'เงิน'],
-          answer: 1
-        },
-        {
-          question: "ใครเขียนเรื่อง 'แฮมเล็ต'?",
-          options: ['เชคสเปียร์', 'ดิกเกนส์', 'เฮมิงเวย์', 'โทลคีน'],
-          answer: 1
-        },
-        {
-          question: 'รากที่สองของ 64 คืออะไร?',
-          options: ['6', '8', '7', '9'],
-          answer: 2
-        },
-        {
-          question: 'มหาสมุทรใดที่ใหญ่ที่สุดในโลก?',
-          options: ['แอตแลนติก', 'อินเดีย', 'แปซิฟิก', 'อาร์กติก'],
-          answer: 3
-        },
-        {
-          question: 'จุดเดือดของน้ำคือกี่องศาเซลเซียส?',
-          options: ['90°C', '80°C', '100°C', '120°C'],
-          answer: 3
-        },
-        {
-          question: 'ใครเป็นคนวาดภาพโมนาลิซา?',
-          options: ['ดาวินชี', 'แวนโก๊ะ', 'ปิกัสโซ่', 'โมเนต์'],
-          answer: 1
-        },
-        {
-          question: 'จำนวนเฉพาะที่เล็กที่สุดคืออะไร?',
-          options: ['0', '1', '2', '3'],
-          answer: 2
-        },
-        {
-          question: 'เงินตราของประเทศญี่ปุ่นคืออะไร?',
-          options: ['เยน', 'วอน', 'ดอลลาร์', 'ยูโร'],
-          answer: 1
-        },
-        {
-          question: 'ใครค้นพบแรงโน้มถ่วง?',
-          options: ['นิวตัน', 'ไอน์สไตน์', 'กาลิเลโอ', 'เทสลา'],
-          answer: 1
-        },
-        {
-          question: 'สัญลักษณ์ทางเคมีของทองคืออะไร?',
-          options: ['Au', 'Ag', 'Fe', 'Hg'],
-          answer: 1
-        },
-        {
-          question: "ประเทศใดมีชื่อเล่นว่า 'ดินแดนแห่งอาทิตย์อุทัย'?",
-          options: ['ญี่ปุ่น', 'จีน', 'อินเดีย', 'ไทย'],
-          answer: 1
-        },
-        {
-          question: 'ความเร็วของแสงคือเท่าไหร่?',
-          options: [
-            '300,000 กม./วินาที',
-            '150,000 กม./วินาที',
-            '200,000 กม./วินาที',
-            '250,000 กม./วินาที'
-          ],
-          answer: 1
-        },
-        {
-          question: "ใครเป็นผู้เขียนเรื่อง '1984'?",
-          options: [
-            'จอร์จ ออร์เวลล์',
-            'มาร์ค ทเวน',
-            'เจน ออสเตน',
-            'เจ.เค. โรว์ลิ่ง'
-          ],
-          answer: 1
-        },
-        {
-          question: 'แม่น้ำที่ยาวที่สุดในโลกคือแม่น้ำใด?',
-          options: ['อะเมซอน', 'ไนล์', 'แยงซีเกียง', 'มิสซิสซิปปี'],
-          answer: 2
-        },
-        {
-          question: 'เมืองหลวงของฝรั่งเศสคืออะไร?',
-          options: ['ปารีส', 'ลอนดอน', 'เบอร์ลิน', 'โรม'],
-          answer: 1
-        },
-        {
-          question: 'ประเทศไทยใช้สกุลเงินใด?',
-          options: ['บาท', 'ดอลลาร์', 'ยูโร', 'เยน'],
-          answer: 1
-        },
-        {
-          question: 'ธงชาติไทยมีกี่สี?',
-          options: ['3', '4', '5', '6'],
-          answer: 1
-        }
-      ]
     </script>
   </body>
 </html>
