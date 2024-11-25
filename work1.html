@@ -61,7 +61,7 @@
   <body>
     <div class="container mt-4">
       <div class="header">
-        <h1>แบบทดสอบความรู้เบื้องต้น</h1>
+        <p class="h1">แบบทดสอบความรู้เบื้องต้น</p>
         <p>ทดสอบความรู้ของคุณ</p>
       </div>
     </div>
@@ -74,7 +74,7 @@
       <div id="quizBox" style="display: none">
         <div id="quizListBox"></div>
         <div class="text-center mt-4">
-          <button class="btn btn-lg" id="btnCheckAnswer">ส่งคำตอบ</button>
+          <button class="btn btn-lg m-3" id="btnCheckAnswer">ส่งคำตอบ</button>
         </div>
       </div>
 
@@ -98,7 +98,7 @@
 
         $('#btnCheckAnswer').click(function () {
           if (!validateAnswers()) {
-            return; // ถ้าตรวจพบคำถามที่ยังไม่ตอบจะไม่ดำเนินการต่อ
+            return; 
           }
           checkAnswers();
         });
@@ -149,14 +149,14 @@
 
           if (!selectedAnswer) {
             allAnswered = false;
-            $(`#question${no}`).css('border', '2px solid red'); // แสดงกรอบสีแดง
+            $(`#question${no}`).css('border', '2px solid red'); 
             $('html, body').animate(
               { scrollTop: $(`#question${no}`).offset().top - 20 },
               300
-            ); // เลื่อนหน้าไปยังคำถามที่ยังไม่ได้ตอบ
-            break; // หยุดหลังจากเจอคำถามแรกที่ยังไม่ตอบ
+            ); 
+            break; 
           } else {
-            $(`#question${no}`).css('border', 'none'); // ลบกรอบสีแดงถ้าตอบแล้ว
+            $(`#question${no}`).css('border', 'none'); 
           }
         }
 
@@ -179,8 +179,8 @@
         $('#resultBox').fadeIn();
         $('#resultBox .alert').html(`
           <p id="scoreText">คุณตอบถูก <strong>${correctCount}/${totalQuestions}</strong> ข้อ</p>
-          <button class="btn btn-lg" id="btnViewScore">ดูคะแนน</button>
-        `); // เปลี่ยนเป็นปุ่ม "ดูคะแนน"
+          <button class="btn btn-lg " id="btnViewScore">ดูคำตอบ</button>
+        `); 
       }
 
       function viewScore() {
@@ -191,19 +191,19 @@
           var no = parseInt(i) + 1;
           var selectedAnswer = $(`input[name='q${no}']:checked`).val();
 
-          // ล็อกตัวเลือกไม่ให้แก้ไขได้
+   
           $(`input[name='q${no}']`).attr('disabled', true);
 
-          // แสดงกรอบสีตามคำตอบ และเฉลยคำตอบที่ถูกต้อง
+        
           if (selectedAnswer == quizlist[i].answer) {
-            $(`#question${no}`).css('border', '3px solid green'); // สีเขียวสำหรับคำตอบถูก
+            $(`#question${no}`).css('border', '3px solid green'); 
           } else {
-            $(`#question${no}`).css('border', '3px solid red'); // สีแดงสำหรับคำตอบผิด
+            $(`#question${no}`).css('border', '3px solid red');
             $(`#options${no} .form-check-label`).eq(quizlist[i].answer - 1).addClass('correct-answer'); // เฉลยคำตอบที่ถูก
           }
         }
 
-        // เลื่อนหน้าไปยังจุดเริ่มต้นของคำถาม
+        
         $('html, body').animate({ scrollTop: $('#quizBox').offset().top }, 300);
       }
 
