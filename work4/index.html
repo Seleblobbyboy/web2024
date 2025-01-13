@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>VR-360</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+</head>
+
+<body>
+    <a-scene>
+      
+        <a-sky id="panorama" src="wallpaperflare.com_wallpaper.jpg"></a-sky>
+
+      
+        <a-assets>
+            <a-asset-item id="avatar-model" src="untitled.glb"></a-asset-item>
+            <a-asset-item id="avatar-model2" src="apple-vision-pro_3d_model_free_download.glb"></a-asset-item>
+            <a-asset-item id="avatar-model3" src="apple-vision-pro_3d_model_free_download.glb"></a-asset-item>
+            <a-asset-item id="avatar-model4" src="apple-vision-pro_3d_model_free_download.glb"></a-asset-item>
+        </a-assets>
+
+      
+        <a-entity 
+            gltf-model="#avatar-model" 
+            scale="3 3 3" 
+            position="-1 0.6 -5" 
+            animation-mixer="clip: *">
+        </a-entity>
+
+  
+        <a-entity 
+            id="orbit" 
+            position="0 0.7 -5" 
+            animation="property: rotation; to: 0 360 0; dur: 10000; loop: true; easing: linear">
+
+         
+            <a-entity 
+                gltf-model="#avatar-model2" 
+                scale="1 1 1" 
+                position="2 0 0" 
+                animation="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear">
+            </a-entity>
+
+          
+            <a-entity 
+                gltf-model="#avatar-model3" 
+                scale="1 1 1" 
+                position="-2 0.5 0.5" 
+                animation="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear">
+            </a-entity>
+
+          
+            <a-entity 
+                gltf-model="#avatar-model4" 
+                scale="1 1 1" 
+                position="0 -0.5 -2" 
+                animation="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear">
+            </a-entity>
+        </a-entity>
+
+   
+        <a-text 
+            value="Name: Patiphan Kaewnual\nID: 663380003-7\n IT KKU" 
+            color="#ffffff" 
+            position="0 -0.4 -3" 
+            width="4" 
+            align="center">
+        </a-text>
+    </a-scene>
+</body>
+
+</html>
