@@ -18,20 +18,20 @@
         <v-app>
             <v-container>
                 <v-card>
-
-
                     <v-card-title class="bg-blue-grey">{{title}}</v-card-title>
                     <v-card-actions>
                         <template v-if="user">
+
                             <div class="pa-2">
                                 <v-avatar><img :src="user.photoURL" /></v-avatar>
                             </div>
                             <div class="pa-2">
                                 {{user.displayName}}<br />
                                 {{user.email}}<br />
+                            </div>
+                            <div>
                                 {{ustudent}}
                             </div>
-
                         </template>
                         <v-btn @click="google_login()" v-if="!user"> Login</v-btn>
                         <v-btn @click="google_logout()" v-if="user"> Logout</v-btn>
@@ -88,7 +88,7 @@
                     <v-card-actions>
                         <v-btn @click="savedata()">Save</v-btn>
                         <v-btn @click="editmode=0">Cancel</v-btn>
-                   </v-card-actions>
+                    </v-card-actions>
                 </v-card>
 
                 <div class="pa-6 text-center">{{footer}}</div>
@@ -129,8 +129,11 @@
                 firebase.auth().onAuthStateChanged((user) => {
                     if (user) {
                         this.user = user.toJSON();
+                        console.log("User logged in:", this.user.email);
+                        this.getstudent(this.user.email);
                     } else {
                         this.user = null;
+                        this.ustudent = null;
                     }
                 });
             },
@@ -183,18 +186,26 @@
                     }
                 },
                 getstudent(email) {
+                    console.log("Fetching student data for:", email);
                     db.collection("students")
                         .where("email", "==", email)
                         .limit(1)
                         .get()
-                        .then(
-                            (querySnapshot) => {
+                        .then((querySnapshot) => {
+                            if (!querySnapshot.empty) {
                                 querySnapshot.forEach((doc) => {
                                     this.ustudent = { id: doc.id, ...doc.data() };
                                 });
+                                console.log("Student data found:", this.ustudent);
+                            } else {
+                                this.ustudent = "ไม่พบข้อมูลในระบบ";
+                                console.log("No student data found");
                             }
-                        );
-                },
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching student data:", error);
+                        });
+                }
 
             },
         });
